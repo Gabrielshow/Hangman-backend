@@ -10,10 +10,12 @@ hangman_game = Hangman.Hangman()
 
 @app.route('/start', methods=['GET'])
 def start_game():
-    # Start the game and send the current display and lives
+    """Start a new game."""
+    hangman_game.start_new_game()  # Reset the game state
     return jsonify({
-        'display': hangman_game.get_display(),
-        'lives': hangman_game.lives
+        'display': hangman_game.get_display()['display'],
+        'lives': hangman_game.lives,
+        'end_of_game': hangman_game.end_of_game
     })
 
 @app.route('/guess', methods=['POST'])
@@ -25,8 +27,11 @@ def guess_letter():
         return jsonify({'error': 'No letter provided'}), 400
 
     result = hangman_game.guess(letter)  # Call the guess method
-    return jsonify(result)
 
+    if result.get('error'):
+        return jsonify(result), 400
+
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True)

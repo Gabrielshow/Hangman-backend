@@ -62,21 +62,27 @@ stages = ['''
 class Hangman:
     def __init__(self):
         self.word_list = ['aardvark', 'camel', 'beans', 'rice', 'father', 'mother']
+        self.start_new_game()
+    
+    def start_new_game(self):
+        """Starts a new game by resetting the game state."""
         self.chosen_word = random.choice(self.word_list)
         self.word_length = len(self.chosen_word)
-        self.display = ['_'] * self.word_length  # Initialize display with underscores
+        self.display = ['_'] * self.word_length
         self.lives = 6
         self.end_of_game = False
-
+        self.message = ''
+    
     def get_display(self):
         """Returns the current word display and lives."""
-        return {'display': ''.join(self.display), 'lives': self.lives, 'end_of_game': self.end_of_game}
+        return {'display': ''.join(self.display), 'lives': self.lives, 'end_of_game': self.end_of_game, 'message': self.message}
 
     def guess(self, letter):
         """Handles guessing a letter."""
         if self.end_of_game:
-            return {'error': 'Game over. Start a new game.'}
-
+            self.message = 'Game over. Start a new game.'
+            return {'error': self.message}
+        
         if len(letter) != 1 or not letter.isalpha():
             return {'error': 'Please provide a valid single letter.'}
 
@@ -98,6 +104,7 @@ class Hangman:
         
         if "_" not in self.display:
             self.end_of_game = True
-            return {'message': 'You win!', 'display': ''.join(self.display), 'lives': self.lives}
+            self.message = 'You win!'
+            return self.get_display()
         
         return self.get_display()
